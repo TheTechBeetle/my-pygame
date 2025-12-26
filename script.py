@@ -14,6 +14,7 @@ air = True
 playerspeed = 600
 friction = 0.8
 enimspeed = 5
+ground = False
 
 player_pos = pygame.Vector2(screen.get_width() / 2, screen.get_height() / 2)
 enim_pos = pygame.Vector2(screen.get_width() / 4, screen.get_height() -80)
@@ -28,11 +29,17 @@ while running:
     # fill the screen with a color to wipe away anything from last frame
     screen.fill("cyan")
 
+    #pygame.draw.circle(screen, "green", plat_pos, 100)
     pygame.draw.circle(screen, "blue", enim_pos, 400)
     pygame.draw.circle(screen, "green", player_pos, 40)
     pygame.draw.circle(screen, "red", player_pos, 30)
     pygame.draw.circle(screen, "blue", player_pos, randint(9,11))
     pygame.draw.circle(screen, "red", enim_pos, 40)
+
+    #diff = player_pos - plat_pos
+
+    ground = player_pos.y > 600
+    #ground = player_pos.y > 600 or diff.magnitude() < 140
 
     diff = player_pos - enim_pos
     if diff.magnitude() < 400:
@@ -46,20 +53,18 @@ while running:
             enim_pos.y -= enimspeed
 
     keys = pygame.key.get_pressed()
-    if keys[pygame.K_SPACE] and player_pos.y > 600:
+    if keys[pygame.K_SPACE] and ground:
         speedy = -20
         player_pos.y += speedy
-    if keys[pygame.K_a] and (player_pos.y > 600 or air):
+    if keys[pygame.K_a] and (ground or air):
         speedx = -playerspeed * dt
-    if keys[pygame.K_d] and (player_pos.y > 600 or air):
+    if keys[pygame.K_d] and (ground or air):
        speedx = playerspeed * dt
-    if player_pos.y < 620:
+    if not ground:
         player_pos.y += speedy
         speedy += 1
-    else:
-        speedy = -1
     player_pos.x += speedx
-    if player_pos.y > 600:
+    if ground:
         speedx = speedx * friction
     if keys[pygame.K_r] or diff.magnitude() < 70 :
         player_pos = pygame.Vector2(screen.get_width() / 2, screen.get_height() / 2)
